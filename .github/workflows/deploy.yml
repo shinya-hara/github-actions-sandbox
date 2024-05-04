@@ -1,0 +1,66 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env-selector.outputs.environment }}
+    steps:
+      - name: Development
+        if: github.ref_name == 'develop'
+        run: echo "environment=development" >> "$GITHUB_ENV"
+
+      - name: Staging
+        if: github.ref_name == 'staging'
+        run: echo "environment=stging" >> "$GITHUB_ENV"
+
+      - name: Production
+        if: github.ref_name == 'main'
+        run: echo "environment=production" >> "$GITHUB_ENV"
+
+      - name: Error
+        if: ${{ env.environment == null }}
+        run: echo "Invalid environment and Branch" && exit 1
+
+      - name: Set environment
+        id: env-selector
+        run: echo "environment=${{ env.environment }}" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fake test
+        run: echo "Test passed"
+
+  deploy:
+    name: Deploy / ${{ needs.setup.outputs.environment }}
+    needs:
+      - setup
+      - test
+    runs-on: ubuntu-latest
+    environment: ${{ needs.setup.outputs.environment }}
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy
+        run: npm run deploy
