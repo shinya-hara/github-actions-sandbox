@@ -10,6 +10,8 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env-selector.outputs.environment }}
     steps:
       - name: Development
         if: github.ref_name == 'develop'
@@ -28,6 +30,7 @@ jobs:
         run: echo "Invalid environment and Branch" && exit 1
 
       - name: Set environment
+        id: env-selector
         run: echo "environment=${{ env.environment }}" >> "$GITHUB_OUTPUT"
 
   test:
