@@ -19,7 +19,7 @@ jobs:
 
       - name: Staging
         if: github.ref_name == 'staging'
-        run: echo "environment=stging" >> "$GITHUB_ENV"
+        run: echo "environment=staging" >> "$GITHUB_ENV"
 
       - name: Production
         if: github.ref_name == 'main'
