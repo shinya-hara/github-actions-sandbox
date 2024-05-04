@@ -8,66 +8,42 @@ on:
       - develop
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Development
+        if: github.ref_name == 'develop'
+        run: echo "environment=development" >> "$GITHUB_ENV"
+
+      - name: Staging
+        if: github.ref_name == 'staging'
+        run: echo "environment=stging" >> "$GITHUB_ENV"
+
+      - name: Production
+        if: github.ref_name == 'main'
+        run: echo "environment=production" >> "$GITHUB_ENV"
+
+      - name: Error
+        if: ${{ env.environment == null }}
+        run: echo "Invalid environment and Branch" && exit 1
+
+      - name: Set environment
+        run: echo "environment=${{ env.environment }}" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Fake test
         run: echo "Test passed"
 
-  deploy-dev:
-    name: Deploy / development
+  deploy:
+    name: Deploy / ${{ needs.setup.outputs.environment }}
+    needs:
+      - setup
+      - test
     runs-on: ubuntu-latest
-    if: github.ref_name == 'develop'
-    needs: test
-    environment: development
-    env:
-      APP_ENV: ${{ vars.APP_ENV }}
-      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Deploy
-        run: npm run deploy
-
-  deploy-stg:
-    name: Deploy / staging
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'staging'
-    needs: test
-    environment: staging
-    env:
-      APP_ENV: ${{ vars.APP_ENV }}
-      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Deploy
-        run: npm run deploy
-
-  deploy-prd:
-    name: Deploy / production
-    runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
-    needs: test
-    environment: production
+    environment: ${{ needs.setup.outputs.environment }}
     env:
       APP_ENV: ${{ vars.APP_ENV }}
       DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
