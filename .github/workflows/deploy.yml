@@ -18,8 +18,11 @@ jobs:
     name: Deploy / development
     runs-on: ubuntu-latest
     if: github.ref_name == 'develop'
-    environment: development
     needs: test
+    environment: development
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,8 +42,11 @@ jobs:
     name: Deploy / staging
     runs-on: ubuntu-latest
     if: github.ref_name == 'staging'
-    environment: staging
     needs: test
+    environment: staging
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,8 +66,11 @@ jobs:
     name: Deploy / production
     runs-on: ubuntu-latest
     if: github.ref_name == 'main'
-    environment: production
     needs: test
+    environment: production
+    env:
+      APP_ENV: ${{ vars.APP_ENV }}
+      DUMMY_SECRET: ${{ secrets.DUMMY_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
