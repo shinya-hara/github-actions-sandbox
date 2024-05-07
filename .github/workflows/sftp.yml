@@ -36,6 +36,7 @@ jobs:
             -o KexAlgorithms=+diffie-hellman-group1-sha1 \
             -o HostKeyAlgorithms=ssh-dss,ssh-rsa \
             -o PubkeyAcceptedAlgorithms=+ssh-rsa \
+            -o StrictHostKeyChecking=no \
             $SFTP_USERNAME@$SFTP_SERVER << EOF
           cd $SFTP_REMOTE_PATH
           put -r ./dist/*
