@@ -29,7 +29,7 @@ jobs:
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
           SFTP_REMOTE_PATH: ${{ vars.SFTP_REMOTE_PATH }}
         run: |
-          sftp -o StrictHostKeyChecking=no -i ~/.ssh/sftp_key $SFTP_USERNAME@$SFTP_SERVER <<EOF
+          sftp -o StrictHostKeyChecking=no -i ~/.ssh/sftp_key -P 2922 $SFTP_USERNAME@$SFTP_SERVER <<EOF
           cd $SFTP_REMOTE_PATH
           put -r ./dist/*
           bye
