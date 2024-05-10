@@ -54,7 +54,7 @@ jobs:
         run: |
           ssh \
             -i ~/.ssh/sftp_key \
-            -P 2922 \
+            -p 2922 \
             -o KexAlgorithms=+diffie-hellman-group1-sha1 \
             -o HostKeyAlgorithms=ssh-dss,ssh-rsa \
             -o PubkeyAcceptedAlgorithms=+ssh-rsa \
