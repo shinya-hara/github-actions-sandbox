@@ -13,8 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install SSH Client
-        run: sudo apt-get update && sudo apt-get install -y openssh-client
+      - name: Install SSH Client & Zip
+        run: sudo apt-get update && sudo apt-get install -y openssh-client zip unzip
+
+      - name: Zip the artifacts
+        run: zip -r artifact.zip ./dist
 
       - name: Setup SSH Key
         env:
@@ -24,7 +27,7 @@ jobs:
           echo "$SFTP_KEY" > ~/.ssh/sftp_key
           chmod 600 ~/.ssh/sftp_key
 
-      - name: Upload files via SFTP
+      - name: Upload ZIP file via SFTP
         env:
           SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
@@ -39,6 +42,24 @@ jobs:
             -o StrictHostKeyChecking=no \
             $SFTP_USERNAME@$SFTP_SERVER << EOF
           cd $SFTP_REMOTE_PATH
-          put -r ./dist/*
+          put artifact.zip
           bye
+          EOF
+
+      - name: Unzip the file on the remote server
+        env:
+          SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_REMOTE_PATH: ${{ vars.SFTP_REMOTE_PATH }}
+        run: |
+          ssh \
+            -i ~/.ssh/sftp_key \
+            -P 2922 \
+            -o KexAlgorithms=+diffie-hellman-group1-sha1 \
+            -o HostKeyAlgorithms=ssh-dss,ssh-rsa \
+            -o PubkeyAcceptedAlgorithms=+ssh-rsa \
+            -o StrictHostKeyChecking=no \
+            $SFTP_USERNAME@$SFTP_SERVER << EOF
+          cd $SFTP_REMOTE_PATH
+          unzip -o artifact.zip
           EOF
