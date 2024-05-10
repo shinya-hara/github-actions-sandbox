@@ -61,5 +61,5 @@ jobs:
             -o StrictHostKeyChecking=no \
             $SFTP_USERNAME@$SFTP_SERVER << EOF
           cd $SFTP_REMOTE_PATH
-          unzip -o artifact.zip
+          unzip -o -d . artifact.zip
           EOF
