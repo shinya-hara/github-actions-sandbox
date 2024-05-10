@@ -17,7 +17,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y openssh-client zip unzip
 
       - name: Zip the artifacts
-        run: zip -r artifact.zip ./dist
+        run: cd dist && zip -r artifact.zip *
 
       - name: Setup SSH Key
         env:
@@ -42,7 +42,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             $SFTP_USERNAME@$SFTP_SERVER << EOF
           cd $SFTP_REMOTE_PATH
-          put artifact.zip
+          put ./dist/artifact.zip
           bye
           EOF
 
@@ -61,5 +61,5 @@ jobs:
             -o StrictHostKeyChecking=no \
             $SFTP_USERNAME@$SFTP_SERVER << EOF
           cd $SFTP_REMOTE_PATH
-          unzip -o -d . artifact.zip
+          unzip -o artifact.zip
           EOF
