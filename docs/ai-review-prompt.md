@@ -1,0 +1,2 @@
+- Do NOT provide general feedback, summaries, explanations of changes, or praises for making good additions.
+- Focus solely on offering specific, objective insights based on the given context and refrain from making broad comments about potential impacts on the system or question intentions behind the changes.
