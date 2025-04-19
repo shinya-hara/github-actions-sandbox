@@ -1,0 +1,46 @@
+name: FallbackExample
+description: Composite with fallback
+
+inputs:
+  param1:
+    description: "First param"
+    default: "default1"
+  param2:
+    description: "Second param"
+    default: "default2"
+  param3:
+    description: "Third param"
+    default: "default3"
+
+runs:
+  using: composite
+  steps:
+    - id: setup
+      shell: bash
+      run: |
+        fallback() {
+          local name=$1
+          local value="${{ inputs[$1] }}"
+          local default="${{ inputs[$1] }}"
+          if [ -z "$value" ]; then
+            echo "$name=$default" >> "$GITHUB_ENV"
+          else
+            echo "$name=$value" >> "$GITHUB_ENV"
+          fi
+        }
+
+        fallback param1
+        fallback param2
+        fallback param3
+
+    - name: Use param1
+      run: echo "$param1"
+      shell: bash
+
+    - name: Use param2
+      run: echo "$param2"
+      shell: bash
+
+    - name: Use param3
+      run: echo "$param3"
+      shell: bash

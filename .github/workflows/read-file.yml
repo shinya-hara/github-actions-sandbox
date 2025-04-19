@@ -33,7 +33,7 @@ jobs:
           trim: true
         continue-on-error: true
 
-      - uses: ./.github/actions/dummy
+      - uses: ./.github/actions/fallback
         with:
           param1: ${{ steps.prompt.outputs.content }}
           param2: ${{ steps.file-not-found.outputs.content }}
