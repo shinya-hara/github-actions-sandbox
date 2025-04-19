@@ -4,26 +4,36 @@ description: Composite with fallback
 inputs:
   param1:
     description: "First param"
-    default: "default1"
+    required: false
   param2:
     description: "Second param"
-    default: "default2"
+    required: false
   param3:
     description: "Third param"
-    default: "default3"
+    required: false
 
 runs:
   using: composite
   steps:
     - name: Set env vars with fallback
       shell: bash
+      env:
+        PARAM1: ${{ inputs.param1 }}
+        PARAM2: ${{ inputs.param2 }}
+        PARAM3: ${{ inputs.param3 }}
+        DEFAULT_PARAM1: |
+          default1
+          default1
+          default1
+        DEFAULT_PARAM2: |
+          default2
+          default2
+          default2
+        DEFAULT_PARAM3: |
+          default3
+          default3
+          default3
       run: |
-        PARAM1="${{ inputs.param1 }}"
-        PARAM2="${{ inputs.param2 }}"
-        PARAM3="${{ inputs.param3 }}"
-        DEFAULT_PARAM1="default1"
-        DEFAULT_PARAM2="default2"
-        DEFAULT_PARAM3="default3"
 
         if [ -z "$PARAM1" ]; then PARAM1="$DEFAULT_PARAM1"; fi
         if [ -z "$PARAM2" ]; then PARAM2="$DEFAULT_PARAM2"; fi
