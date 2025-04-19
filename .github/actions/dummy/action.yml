@@ -14,7 +14,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: echo ${{ inputs.param1 }}
+    - run: echo "${{ inputs.param1 }}"
       shell: bash
-    - run: echo ${{ inputs.param2 }}
+    - run: echo "${{ inputs.param2 }}"
       shell: bash
