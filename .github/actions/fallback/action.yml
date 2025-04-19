@@ -1,0 +1,71 @@
+name: FallbackExample
+description: Composite with fallback
+
+inputs:
+  param1:
+    description: "First param"
+    required: false
+  param2:
+    description: "Second param"
+    required: false
+  param3:
+    description: "Third param"
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Set env vars with fallback
+      shell: bash
+      env:
+        PARAM1: ${{ inputs.param1 }}
+        PARAM2: ${{ inputs.param2 }}
+        PARAM3: ${{ inputs.param3 }}
+        DEFAULT_PARAM1: |
+          default1
+          default1
+          default1
+        DEFAULT_PARAM2: |
+          default2
+          default2
+          default2
+        DEFAULT_PARAM3: |
+          default3
+          default3
+          default3
+      run: |
+
+        if [ -z "$PARAM1" ]; then PARAM1="$DEFAULT_PARAM1"; fi
+        if [ -z "$PARAM2" ]; then PARAM2="$DEFAULT_PARAM2"; fi
+        if [ -z "$PARAM3" ]; then PARAM3="$DEFAULT_PARAM3"; fi
+
+        # 単純にenv定義しようとすると改行を含む文字列に対応できない
+        # echo "param1=$PARAM1" >> "$GITHUB_ENV"
+        # echo "param2=$PARAM2" >> "$GITHUB_ENV"
+        # echo "param3=$PARAM3" >> "$GITHUB_ENV"
+
+        {
+          echo "param1<<EOF"
+          echo "$PARAM1"
+          echo "EOF"
+
+          echo "param2<<EOF"
+          echo "$PARAM2"
+          echo "EOF"
+
+          echo "param3<<EOF"
+          echo "$PARAM3"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    - name: Use param1
+      run: echo "$param1"
+      shell: bash
+
+    - name: Use param2
+      run: echo "$param2"
+      shell: bash
+
+    - name: Use param3
+      run: echo "$param3"
+      shell: bash

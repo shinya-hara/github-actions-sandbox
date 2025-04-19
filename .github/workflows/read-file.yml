@@ -1,0 +1,39 @@
+name: Read file
+description: |
+  リポジトリ内の別ファイルを読み込んでアクションで利用する
+  AI向けのプロンプトをmarkdownで記述している場合などを想定
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - chore/read-file-action
+
+jobs:
+  read-file:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read prompt
+        id: prompt
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./docs/ai-review-prompt.md
+          trim: true
+        continue-on-error: true
+
+      - name: File not found
+        id: file-not-found
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./docs/not-found.md
+          trim: true
+        continue-on-error: true
+
+      - uses: ./.github/actions/fallback
+        with:
+          param1: ${{ steps.prompt.outputs.content }}
+          param2: ${{ steps.file-not-found.outputs.content }}
