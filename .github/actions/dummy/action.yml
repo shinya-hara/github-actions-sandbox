@@ -1,0 +1,20 @@
+name: Dummy action
+description: A dummy action to demonstrate the use of inputs and outputs in GitHub Actions.
+
+inputs:
+  param1:
+    description: 1つ目のパラメータ
+    required: false
+    default: param1 default value
+  param2:
+    description: 2つ目のパラメータ
+    required: false
+    default: param2 default value
+
+runs:
+  using: composite
+  steps:
+    - run: echo ${{ inputs.param1 }}
+      shell: bash
+    - run: echo ${{ inputs.param2 }}
+      shell: bash

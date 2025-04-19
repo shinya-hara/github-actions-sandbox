@@ -22,6 +22,18 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: ./docs/ai-review-prompt.md
+          trim: true
+        continue-on-error: true
 
-      - name: Echo prompt
-        run: echo "${{ steps.prompt.outputs.content }}"
+      - name: File not found
+        id: file-not-found
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./docs/not-found.md
+          trim: true
+        continue-on-error: true
+
+      - uses: ./.github/actions/dummy
+        with:
+          param1: ${{ steps.prompt.outputs.content }}
+          param2: ${{ steps.file-not-found.outputs.content }}
