@@ -15,23 +15,23 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: setup
+    - name: Set env vars with fallback
       shell: bash
       run: |
-        fallback() {
-          local name=$1
-          local value="${{ inputs[$1] }}"
-          local default="${{ inputs[$1] }}"
-          if [ -z "$value" ]; then
-            echo "$name=$default" >> "$GITHUB_ENV"
-          else
-            echo "$name=$value" >> "$GITHUB_ENV"
-          fi
-        }
+        PARAM1="${{ inputs.param1 }}"
+        PARAM2="${{ inputs.param2 }}"
+        PARAM3="${{ inputs.param3 }}"
+        DEFAULT_PARAM1="default1"
+        DEFAULT_PARAM2="default2"
+        DEFAULT_PARAM3="default3"
 
-        fallback param1
-        fallback param2
-        fallback param3
+        if [ -z "$PARAM1" ]; then PARAM1="$DEFAULT_PARAM1"; fi
+        if [ -z "$PARAM2" ]; then PARAM2="$DEFAULT_PARAM2"; fi
+        if [ -z "$PARAM3" ]; then PARAM3="$DEFAULT_PARAM3"; fi
+
+        echo "param1=$PARAM1" >> "$GITHUB_ENV"
+        echo "param2=$PARAM2" >> "$GITHUB_ENV"
+        echo "param3=$PARAM3" >> "$GITHUB_ENV"
 
     - name: Use param1
       run: echo "$param1"
